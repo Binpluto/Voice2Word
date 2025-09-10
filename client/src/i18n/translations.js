@@ -79,6 +79,30 @@ export const translations = {
       shared: '分享链接已复制！'
     },
 
+    // ConfigCheck
+    config: {
+      title: '系统配置检查',
+      checking: '检查配置中...',
+      connectionError: '连接错误',
+      possibleCauses: '可能的原因：',
+      serverNotRunning: '后端服务器未启动',
+      portOccupied: '端口5000被占用',
+      networkIssue: '网络连接问题',
+      recheck: '重新检查',
+      foundIssues: '发现的问题：',
+      suggestions: '解决建议：',
+      configDetails: '配置详情：',
+      apiKey: 'OpenAI API密钥：',
+      uploadDir: '上传目录：',
+      environment: '运行环境：',
+      configured: '✓ 已配置',
+      notConfigured: '✗ 未配置',
+      normal: '✓ 正常',
+      abnormal: '✗ 异常',
+      close: '关闭',
+      checkConfig: '检查配置'
+    },
+
     // Language
     language: {
       switch: '切换语言',
@@ -164,6 +188,30 @@ export const translations = {
       shareButton: '📤 Share with Friends',
       liked: 'Thank you for your support!',
       shared: 'Share link copied!'
+    },
+
+    // ConfigCheck
+    config: {
+      title: 'System Configuration Check',
+      checking: 'Checking configuration...',
+      connectionError: 'Connection Error',
+      possibleCauses: 'Possible causes:',
+      serverNotRunning: 'Backend server not running',
+      portOccupied: 'Port 5000 is occupied',
+      networkIssue: 'Network connection issue',
+      recheck: 'Recheck',
+      foundIssues: 'Issues found:',
+      suggestions: 'Suggestions:',
+      configDetails: 'Configuration Details:',
+      apiKey: 'OpenAI API Key:',
+      uploadDir: 'Upload Directory:',
+      environment: 'Environment:',
+      configured: '✓ Configured',
+      notConfigured: '✗ Not Configured',
+      normal: '✓ Normal',
+      abnormal: '✗ Abnormal',
+      close: 'Close',
+      checkConfig: 'Check Config'
     },
 
     // Language

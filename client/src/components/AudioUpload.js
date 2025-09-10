@@ -1,13 +1,15 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Link, FileAudio, AlertCircle } from 'lucide-react';
+import { Upload, Link, FileAudio, AlertCircle, Settings } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import ConfigCheck from './ConfigCheck';
 
 const AudioUpload = ({ onSubmit, error }) => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('file'); // 'file' or 'url'
   const [url, setUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [showConfigCheck, setShowConfigCheck] = useState(false);
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -132,13 +134,28 @@ const AudioUpload = ({ onSubmit, error }) => {
         )}
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
-            <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-sm font-medium text-red-800">处理失败</p>
-              <p className="text-sm text-red-600 mt-1">{error}</p>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start mb-2">
+              <AlertCircle className="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-red-800">处理失败</p>
+                <p className="text-sm text-red-600 mt-1">{error}</p>
+              </div>
             </div>
+            {(error.includes('API密钥') || error.includes('配额') || error.includes('转录失败')) && (
+              <button
+                onClick={() => setShowConfigCheck(true)}
+                className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 flex items-center"
+              >
+                <Settings className="w-4 h-4 mr-1" />
+                检查配置
+              </button>
+            )}
           </div>
+        )}
+        
+        {showConfigCheck && (
+          <ConfigCheck onClose={() => setShowConfigCheck(false)} />
         )}
 
         <button

@@ -35,10 +35,49 @@ app.use('/api', cardRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
+  const apiKeyConfigured = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_api_key_here';
+  
   res.json({ 
     status: 'ok', 
     message: 'Voice2Word API服务运行正常',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    config: {
+      openai_api_key: apiKeyConfigured ? '已配置' : '❌ 未配置',
+      port: PORT,
+      upload_dir: uploadDir,
+      client_url: process.env.CLIENT_URL || 'http://localhost:3000'
+    },
+    warnings: apiKeyConfigured ? [] : ['请在.env文件中配置有效的OPENAI_API_KEY以使用转录功能']
+  });
+});
+
+// 配置检查端点
+app.get('/api/config-check', (req, res) => {
+  const apiKeyConfigured = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your_openai_api_key_here';
+  const issues = [];
+  const suggestions = [];
+  
+  if (!apiKeyConfigured) {
+    issues.push('OpenAI API密钥未配置');
+    suggestions.push('请在server/.env文件中设置有效的OPENAI_API_KEY');
+    suggestions.push('获取API密钥: https://platform.openai.com/api-keys');
+  }
+  
+  if (!fs.existsSync(uploadDir)) {
+    issues.push('上传目录不存在');
+    suggestions.push('请确保uploads目录有写入权限');
+  }
+  
+  res.json({
+    status: issues.length === 0 ? 'healthy' : 'warning',
+    message: issues.length === 0 ? '所有配置正常' : '发现配置问题',
+    issues,
+    suggestions,
+    config: {
+      openai_api_key: apiKeyConfigured,
+      upload_dir_exists: fs.existsSync(uploadDir),
+      node_env: process.env.NODE_ENV || 'development'
+    }
   });
 });
 

@@ -10,6 +10,10 @@ const ffmpeg = require('fluent-ffmpeg');
 const router = express.Router();
 
 // 配置OpenAI
+if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+  console.error('❌ 错误: 请在.env文件中配置有效的OPENAI_API_KEY');
+}
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -106,6 +110,11 @@ const downloadAudioFromUrl = async (url, outputPath) => {
 // 辅助函数：使用OpenAI Whisper转录音频
 const transcribeAudio = async (filePath) => {
   try {
+    // 检查API密钥
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+      throw new Error('OpenAI API密钥未配置，请在.env文件中设置有效的OPENAI_API_KEY');
+    }
+    
     const transcription = await openai.audio.transcriptions.create({
       file: fs.createReadStream(filePath),
       model: 'whisper-1',
@@ -116,13 +125,30 @@ const transcribeAudio = async (filePath) => {
     return transcription;
   } catch (error) {
     console.error('Whisper转录错误:', error);
-    throw new Error('音频转录失败');
+    
+    // 提供更详细的错误信息
+    if (error.message.includes('API密钥')) {
+      throw error;
+    } else if (error.code === 'insufficient_quota') {
+      throw new Error('OpenAI API配额不足，请检查您的账户余额');
+    } else if (error.code === 'invalid_api_key') {
+      throw new Error('OpenAI API密钥无效，请检查.env文件中的配置');
+    } else if (error.code === 'model_not_found') {
+      throw new Error('Whisper模型不可用，请稍后重试');
+    } else {
+      throw new Error(`音频转录失败: ${error.message || '未知错误'}`);
+    }
   }
 };
 
 // 辅助函数：生成摘要
 const generateSummary = async (text) => {
   try {
+    // 检查API密钥
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+      throw new Error('OpenAI API密钥未配置，请在.env文件中设置有效的OPENAI_API_KEY');
+    }
+    
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
@@ -142,13 +168,29 @@ const generateSummary = async (text) => {
     return completion.choices[0].message.content.trim();
   } catch (error) {
     console.error('摘要生成错误:', error);
-    throw new Error('摘要生成失败');
+    
+    // 提供更详细的错误信息
+    if (error.message.includes('API密钥')) {
+      throw error;
+    } else if (error.code === 'insufficient_quota') {
+      throw new Error('OpenAI API配额不足，请检查您的账户余额');
+    } else if (error.code === 'invalid_api_key') {
+      throw new Error('OpenAI API密钥无效，请检查.env文件中的配置');
+    } else {
+      throw new Error(`摘要生成失败: ${error.message || '未知错误'}`);
+    }
   }
 };
 
 // 辅助函数：提取标题
 const extractTitle = async (text) => {
   try {
+    // 检查API密钥
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+      console.warn('API密钥未配置，跳过标题生成');
+      return '音频转录结果';
+    }
+    
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
@@ -168,7 +210,8 @@ const extractTitle = async (text) => {
     return completion.choices[0].message.content.trim().replace(/[""]/g, '');
   } catch (error) {
     console.error('标题提取错误:', error);
-    return null;
+    // 标题生成失败时返回默认标题，不影响主要功能
+    return '音频转录结果';
   }
 };
 
