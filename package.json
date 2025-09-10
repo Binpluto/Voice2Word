@@ -1,0 +1,19 @@
+{
+  "name": "voice2word",
+  "version": "1.0.0",
+  "description": "将播客音频转换成文本并生成简约小卡片的网站",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": ["podcast", "audio", "transcription", "voice-to-text"],
+  "author": "Voice2Word Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
